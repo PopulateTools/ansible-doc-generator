@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require_relative '../lib/ansible_doc_generator'
+
+option_parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: ansible-doc-generator [options]'
+
+  # opts.on('-i', '--interactive', '[Optional] Interactive command line mode - for restoring dumps into databases') do
+  #   interactive = true
+  # end
+
+  opts.on('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+
+  # opts.separator "\nSetting can be verified by running following commands:"
+end
+
+begin
+  option_parser.parse!
+rescue OptionParser::ParseError => e
+  warn e.message.capitalize
+  warn 'Type "ansible_doc_generator -h" for available options'
+  exit
+end
+
+# Run generator
+AnsibleDocGenerator::DocGenerator.new(ARGV[0], ARGV[1]).call
+
