@@ -35,7 +35,7 @@ module AnsibleDocGenerator
           if line.start_with?('#') && META_KEYWORDS.any?{|keyword| line.start_with?("# @#{keyword}") }
             parsed_content['meta'] << line.gsub('# ', '').strip
           elsif line.start_with?('#')
-            current_comments << line.gsub('# ', '').strip
+            current_comments << line.gsub('# ', '')
           elsif line.start_with?('- name:')
             task_name = line.gsub('- name:','').strip
             parsed_content[task_name] = current_comments
@@ -59,7 +59,7 @@ module AnsibleDocGenerator
           title = extract_from(:title, lines)
 
           output = extract_multiline_from(:output, lines, separator: "\n")
-          input = extract_multiline_from(:input, lines, separator: "\n")
+          input = extract_multiline_from(:input, lines, separator: "")
           comments = extract_multiline_from(:comment, lines)
 
           md_output << generate_md_with(task_name, title: title, comments: comments, output: output, input: input)
@@ -105,7 +105,7 @@ module AnsibleDocGenerator
             current_item = []
             # It's the second/third... line of a comment
           elsif current_item.any? && !line.start_with?('@')
-            current_item << line.strip
+            current_item << line
           end
         end
 
@@ -120,7 +120,13 @@ module AnsibleDocGenerator
 
       def clean_line(keyword, line)
         return nil unless line
-        line.gsub(/@#{keyword}_#{lang}|@#{keyword}/, '').strip
+
+        no_keyword_line = line.gsub(/@#{keyword}_#{lang}|@#{keyword}/, '')
+        if keyword == "input"
+          no_keyword_line
+        else
+          no_keyword_line.strip
+        end
       end
 
       def join_elements elements, separator
