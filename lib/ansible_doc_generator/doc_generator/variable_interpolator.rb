@@ -27,16 +27,23 @@ module AnsibleDocGenerator
       private
 
       def get_string interpolation
-        yaml_path = interpolation.match(/#\{(\S*)\}/)[1]
-        yaml_value = task.dig *yaml_path.split('>')
+        variable_match = interpolation.match(/#\{([^\}]+)\}/)[1]
+        yaml_path, filters = variable_match.split('|')
+        set_filters(filters)
+        yaml_value = task.dig(*yaml_path.gsub(/\s/, '').split('>'))
 
         case yaml_value
         when String then yaml_value
-        when Array then yaml_value.join(", ")
+        when Array then yaml_value.join(@filters[:join])
         else interpolation
         end
       end
 
+      def set_filters(filters)
+        return if filters.nil?
+        filter_name, filter_value = filters.split(':')
+        @filters[filter_name.gsub(/\s/, '').to_sym] = eval(filter_value)
+      end
     end
   end
 end
