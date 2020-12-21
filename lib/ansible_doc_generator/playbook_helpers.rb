@@ -21,10 +21,6 @@ module AnsibleDocGenerator
       @project_folder ||= File.dirname(playbook_path)
     end
 
-    def populate_ansible_folder
-      File.join(ENV.fetch('DEV_DIR'), 'populate-ansible')
-    end
-
     def playbook
       @playbook ||= YAML.load_file(playbook_path).first
     end
