@@ -8,12 +8,15 @@ module AnsibleDocGenerator
       def initialize input, task
         @input = input
         @task = task
+        @filters = {
+          join: ', '
+        }
       end
 
       def call
         output = input
 
-        input.scan(/\#\{\S+\}/).each do |interpolation|
+        input.scan(/#\{[^\}]+\}/).each do |interpolation|
           new_string = get_string(interpolation)
           output.gsub!(interpolation, new_string)
         end

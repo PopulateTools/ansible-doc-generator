@@ -57,10 +57,9 @@ module AnsibleDocGenerator
       def generate_tasks_content
         parsed_content.each do |task_name, lines|
           title = extract_from(:title, lines)
-          next if title.nil?
 
-          output = extract_multiline_from(:output, lines, separator: "\n").first
-          input = extract_multiline_from(:input, lines, separator: "\n").first
+          output = extract_multiline_from(:output, lines, separator: "\n")
+          input = extract_multiline_from(:input, lines, separator: "\n")
           comments = extract_multiline_from(:comment, lines)
 
           md_output << generate_md_with(task_name, title: title, comments: comments, output: output, input: input)
@@ -68,10 +67,11 @@ module AnsibleDocGenerator
       end
 
       def generate_md_with task_name, params
-        temp_md = ["### #{params[:title]}"]
+        temp_md = []
+        temp_md.push("### #{params[:title]}") if params[:title]
         params.fetch(:comments, []).each{|comment| temp_md << comment }
-        temp_md << "Input: \n\n```\n#{params[:input]}\n```" if params[:input]
-        temp_md << "Expected output: \n\n```\n#{params[:output]}\n```" if params[:output]
+        temp_md << "```\n#{params.fetch(:input, []).join("\n")}\n```"
+        temp_md << "Expected output: \n\n```\n#{params[:output]}\n```" if params[:output].length > 0
 
         non_interpolated_output = join_elements(temp_md, "\n\n")
         task = tasks.find{|task| task['name'] == task_name}
