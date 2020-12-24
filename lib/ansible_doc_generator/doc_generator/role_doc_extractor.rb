@@ -81,7 +81,7 @@ module AnsibleDocGenerator
 
         non_interpolated_output = join_elements(temp_md, "\n\n")
         task = tasks.find{|task| task['name'] == task_name}
-        Interpolator.new(non_interpolated_output, task).call
+        Interpolator.new(non_interpolated_output, task, yml_path).call
       end
 
       def extract_from keyword, lines
