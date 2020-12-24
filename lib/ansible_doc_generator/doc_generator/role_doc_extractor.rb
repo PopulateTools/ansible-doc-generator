@@ -18,14 +18,20 @@ module AnsibleDocGenerator
       end
 
       def call
-        parse_file_comments
-        generate_meta_content
-        generate_tasks_content
-
-        join_elements(md_output, "\n\n")
+        joined_output
       end
 
       private
+
+      def joined_output
+        @joined_output ||= begin
+          parse_file_comments
+          generate_meta_content
+          generate_tasks_content
+
+          join_elements(md_output, "\n\n")
+        end
+      end
 
       # Extract relevant lines from the file and group them by task
       def parse_file_comments
@@ -46,7 +52,7 @@ module AnsibleDocGenerator
       end
 
       def generate_meta_content
-        return if parsed_content['meta'].nil?
+        return if parsed_content['meta'] == []
         metatitle = extract_from(:metatitle, parsed_content['meta'])
         return if metatitle.nil?
 
@@ -70,7 +76,7 @@ module AnsibleDocGenerator
         temp_md = []
         temp_md.push("### #{params[:title]}") if params[:title]
         params.fetch(:comments, []).each{|comment| temp_md << comment }
-        temp_md << "```\n#{params.fetch(:input, []).join("\n")}\n```"
+        temp_md << "```\n#{params.fetch(:input, []).join("\n")}\n```" if params[:input].length > 0
         temp_md << "Expected output: \n\n```\n#{params[:output]}\n```" if params[:output].length > 0
 
         non_interpolated_output = join_elements(temp_md, "\n\n")

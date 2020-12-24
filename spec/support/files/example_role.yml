@@ -1,0 +1,65 @@
+# @title_es Añadir el repositorio para fullstaq ruby en yum
+# @title_en Add fullstaq ruby repository for yum
+# @input yum-config-manager --add-repo #{yum_repository>baseurl}
+- name: Add fullstaq repository
+  yum_repository:
+    name: fullstaq-ruby
+    description: fullstaq repo
+    baseurl: https://yum.fullstaqruby.org/centos-7/$basearch
+    gpgcheck: no
+    repo_gpgcheck: yes
+    enabled: yes
+    gpgkey: https://raw.githubusercontent.com/fullstaq-labs/fullstaq-ruby-server-edition/main/fullstaq-ruby.asc
+    sslverify: yes
+
+# @title_es Instalar el paquete fullstaq ruby
+# @title_en Install fullstaq ruby package
+# @input yum install -y #{package>name}
+- name: Install Fullstaq ruby
+  package:
+    name: fullstaq-ruby-common
+    state: present
+    update_cache: true
+  become: true
+
+# @title_es Instalar las versiones de ruby
+# @title_en Install ruby versions
+# @input yum install -y #{package>name}
+- name: Install ruby-versions
+  package:
+    name: '{{ ruby_versions }}'
+    state: present
+  become: true
+
+# @title_es Instalar el plugin de rbenv `rbenv-vars`
+# @title_en Install `rbenv-vars` plugin
+# @comment_es Este plugin permite a las aplicaciones cargar las variables de entorno definidas en el fichero `.rbenv-vars`
+# @comment_en This plugin allows applications to load environment variables from a file called `.rbenv-vars` automatically
+# @input git clone #{git>repo} #{git>dest}
+- name: Install rbenv vars plugin
+  become: true
+  git:
+    repo: https://github.com/rbenv/rbenv-vars.git
+    dest: /usr/lib/rbenv/plugins/rbenv-vars
+    update: yes
+    force: yes
+
+# @title_es Activar rbenv
+# @title_en Activate rbenv
+# @comment_es Añadir una entrada en #{lineinfile>destfile} para activar rbenv
+# @comment_en Add a line in #{lineinfile>destfile} to activate rbenv
+# @input #{lineinfile>line}
+- name: Activate rbenv in users
+  become: yes
+  lineinfile:
+    destfile: /etc/bashrc
+    regexp: "^rbenv init"
+    line: "eval \"$(rbenv init -)\""
+    state: present
+
+# @title_es Activar plugin rbenv-vars
+# @title_en Activate rbenv-vars plugin
+- name: Activate rbenv vars
+  become: yes
+  lineinfile: destfile=/etc/bashrc regexp="^rbenv-vars" line="eval \"$(/usr/lib/rbenv/plugins/rbenv-vars/bin/rbenv-vars)\"" state=present
+
