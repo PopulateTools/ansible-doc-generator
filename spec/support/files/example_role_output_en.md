@@ -33,3 +33,7 @@ eval "$(rbenv init -)"
 ```
 
 ### Activate rbenv-vars plugin
+
+```
+/etc/bashrc
+```

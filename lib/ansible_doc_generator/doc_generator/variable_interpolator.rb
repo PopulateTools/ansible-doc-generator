@@ -30,7 +30,7 @@ module AnsibleDocGenerator
         variable_match = interpolation.match(/#\{([^\}]+)\}/)[1]
         yaml_path, filters = variable_match.split('|')
         set_filters(filters)
-        yaml_value = task.dig(*yaml_path.gsub(/\s/, '').split('>'))
+        yaml_value = dig(task, yaml_path.gsub(/\s/, '').split('>'))
 
         case yaml_value
         when String then yaml_value
@@ -44,6 +44,25 @@ module AnsibleDocGenerator
         filter_name, filter_value = filters.split(':')
         @filters[filter_name.gsub(/\s/, '').to_sym] = eval(filter_value)
       end
+
+      def dig task, keys
+        head, *tail = keys
+        new_task = task[head]
+
+        if tail == []
+          return new_task
+        elsif new_task.is_a?(String) && tail != []
+          dig(hashify_inline_syntax(new_task), tail)
+        else
+          dig(new_task, tail)
+        end
+      end
+
+      def hashify_inline_syntax string
+        separated_values = string.scan(/(\w+)=("[^"]*"|\S+)/)
+        separated_values.each_with_object({}){|(key, value), output| output[key] = value }
+      end
+
     end
   end
 end

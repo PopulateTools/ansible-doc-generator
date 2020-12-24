@@ -59,6 +59,7 @@
 
 # @title_es Activar plugin rbenv-vars
 # @title_en Activate rbenv-vars plugin
+# @input #{lineinfile>destfile}
 - name: Activate rbenv vars
   become: yes
   lineinfile: destfile=/etc/bashrc regexp="^rbenv-vars" line="eval \"$(/usr/lib/rbenv/plugins/rbenv-vars/bin/rbenv-vars)\"" state=present
