@@ -17,7 +17,7 @@ sub-level it can be reached using the `>` operator, i.e. `#{apt>pkg}`
 
 Here's an example of role that uses most of the comments and variable interpolation:
 
-```
+```yaml
 ---
 # @metatitle Install Postgresql
 
