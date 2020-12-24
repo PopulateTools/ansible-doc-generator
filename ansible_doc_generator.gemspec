@@ -7,7 +7,7 @@ require 'ansible_doc_generator/version'
 Gem::Specification.new do |spec|
   spec.name          = 'ansible_doc_generator'
   spec.version       = AnsibleDocGenerator::VERSION
-  spec.authors       = ['Victor Martínez', 'Fernando Blat']
+  spec.authors       = ['Víctor Martín', 'Fernando Blat']
   spec.email         = ['victor@populate.tools', 'fernando@populate.tools']
 
   spec.summary       = 'Document Ansible roles'
