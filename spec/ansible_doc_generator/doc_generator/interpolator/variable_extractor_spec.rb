@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe AnsibleDocGenerator::DocGenerator::VariableInterpolator do
+describe AnsibleDocGenerator::DocGenerator::Interpolator::VariableExtractor do
   subject { described_class.new(input, task) }
 
   describe '#call' do
