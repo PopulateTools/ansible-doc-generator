@@ -52,15 +52,21 @@ module AnsibleDocGenerator
         if tail == []
           return new_task
         elsif new_task.is_a?(String) && tail != []
-          dig(hashify_inline_syntax(new_task), tail)
+          return scan_in_inline_syntax(new_task, tail.first)
         else
           dig(new_task, tail)
         end
       end
 
-      def hashify_inline_syntax string
-        separated_values = string.scan(/(\w+)=("[^"]*"|\S+)/)
-        separated_values.each_with_object({}){|(key, value), output| output[key] = value }
+      def scan_in_inline_syntax string, key
+        input = StringScanner.new(string)
+
+        # Scan until the key we are looking for
+        input.scan_until(/#{key}=/)
+        # Scan until the next key
+        output = input.scan_until(/\s{1}\S+=/)
+        # Remove the next key part
+        output.gsub(/\s{1}\S+=/, '')
       end
 
     end

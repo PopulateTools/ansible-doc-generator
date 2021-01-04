@@ -67,5 +67,19 @@ describe AnsibleDocGenerator::DocGenerator::VariableInterpolator do
         expect(subject.call).to eq 'Add a line in /etc/bashrc to activate the plugin'
       end
     end
+
+    context 'interpolation with more complex inline syntax' do
+      let(:input) { 'Add the line #{lineinfile>line} in #{lineinfile>destfile} just after #{lineinfile>regexp}' }
+      let(:task) do
+        {
+          'name' => 'Activate rbenv vars',
+          'lineinfile' => 'destfile=/etc/bashrc line="eval \"$(/usr/lib/rbenv/plugins/rbenv-vars/bin/rbenv-vars)\"" regexp="^rbenv-vars" state=present'
+        }
+      end
+
+      it 'returns the expected output' do
+        expect(subject.call).to eq 'Add the line "eval \"$(/usr/lib/rbenv/plugins/rbenv-vars/bin/rbenv-vars)\"" in /etc/bashrc just after "^rbenv-vars"'
+      end
+    end
   end
 end
