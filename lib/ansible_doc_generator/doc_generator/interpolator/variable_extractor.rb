@@ -64,8 +64,8 @@ module AnsibleDocGenerator
 
           # Scan until the key we are looking for
           input.scan_until(/#{key}=/)
-          # Scan until the next key
-          output = input.scan_until(/\s{1}\S+=/)
+          # Scan until the next key or until the end
+          output = input.scan_until(/\s{1}\S+=/) || input.scan(/.*/)
           # Remove the next key part
           output.gsub(/\s{1}\S+=/, '')
         end
