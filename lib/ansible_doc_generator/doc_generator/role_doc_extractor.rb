@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "variable_interpolator"
+require_relative "interpolator"
 
 module AnsibleDocGenerator
   class DocGenerator
@@ -81,7 +81,7 @@ module AnsibleDocGenerator
 
         non_interpolated_output = join_elements(temp_md, "\n\n")
         task = tasks.find{|task| task['name'] == task_name}
-        VariableInterpolator.new(non_interpolated_output, task).call
+        Interpolator.new(non_interpolated_output, task, yml_path).call
       end
 
       def extract_from keyword, lines
