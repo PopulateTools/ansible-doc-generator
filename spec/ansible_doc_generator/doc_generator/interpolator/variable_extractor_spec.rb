@@ -73,7 +73,7 @@ describe AnsibleDocGenerator::DocGenerator::Interpolator::VariableExtractor do
       let(:task) do
         {
           'name' => 'Activate rbenv vars',
-          'lineinfile' => 'destfile=/etc/bashrc line="eval \"$(/usr/lib/rbenv/plugins/rbenv-vars/bin/rbenv-vars)\"" regexp="^rbenv-vars" state=present'
+          'lineinfile' => 'destfile=/etc/bashrc line="eval \"$(/usr/lib/rbenv/plugins/rbenv-vars/bin/rbenv-vars)\"" regexp="^rbenv-vars"'
         }
       end
 
