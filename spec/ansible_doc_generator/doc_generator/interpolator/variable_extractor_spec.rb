@@ -1,7 +1,9 @@
 require "spec_helper"
 
 describe AnsibleDocGenerator::DocGenerator::Interpolator::VariableExtractor do
-  subject { described_class.new(input, task) }
+  let(:role_path) { 'fake/path' }
+
+  subject { described_class.new(input, task, role_path) }
 
   describe '#call' do
     context 'basic interpolation' do
@@ -79,6 +81,22 @@ describe AnsibleDocGenerator::DocGenerator::Interpolator::VariableExtractor do
 
       it 'returns the expected output' do
         expect(subject.call).to eq 'Add the line "eval \"$(/usr/lib/rbenv/plugins/rbenv-vars/bin/rbenv-vars)\"" in /etc/bashrc just after "^rbenv-vars"'
+      end
+    end
+
+    context 'missing interpolation' do
+      let(:input) { 'apt install -y #{apt>pkg | join: \' \'}' }
+      let(:task) do
+        {
+          'name' => 'Install required packages',
+          'package' => {
+            'pkg' => ["dirmngr", "gnupg", "apt-transport-https", "ca-certificates"]
+          }
+        }
+      end
+
+      it 'raises an error' do
+        expect { subject.call }.to raise_error(AnsibleDocGenerator::DocGenerator::Interpolator::VariableExtractor::MissingInterpolationError)
       end
     end
   end

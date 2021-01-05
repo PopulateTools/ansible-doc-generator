@@ -4,11 +4,15 @@ module AnsibleDocGenerator
   class DocGenerator
     class Interpolator
       class VariableExtractor
-        attr_reader :input, :task
 
-        def initialize input, task
+        class MissingInterpolationError < StandardError; end
+
+        attr_reader :input, :task, :role_path
+
+        def initialize input, task, role_path
           @input = input
           @task = task
+          @role_path = role_path
           @filters = {
             join: ', '
           }
@@ -38,6 +42,8 @@ module AnsibleDocGenerator
           when Array then yaml_value.join(@filters[:join])
           else interpolation
           end
+        rescue MissingInterpolationError => e
+          raise e, "Interpolation not found:\n - #{interpolation}\n - #{task}\n - #{role_path}"
         end
 
         def set_filters(filters)
@@ -49,6 +55,8 @@ module AnsibleDocGenerator
         def dig task, keys
           head, *tail = keys
           new_task = task[head]
+
+          raise MissingInterpolationError if new_task.nil?
 
           if tail == []
             return new_task

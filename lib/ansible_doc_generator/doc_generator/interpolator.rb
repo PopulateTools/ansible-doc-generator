@@ -15,7 +15,7 @@ module AnsibleDocGenerator
       end
 
       def call
-        variables_interpolated = Interpolator::VariableExtractor.new(input, task).call
+        variables_interpolated = Interpolator::VariableExtractor.new(input, task, role_path).call
         Interpolator::FileExtractor.new(variables_interpolated, role_path).call
       end
 
