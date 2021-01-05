@@ -4,19 +4,26 @@
 require 'optparse'
 require_relative '../lib/ansible_doc_generator'
 
+@options = {
+  lang: 'en',
+  playbook: nil
+}
+
 option_parser = OptionParser.new do |opts|
   opts.banner = 'Usage: ansible-doc-generator [options]'
 
-  # opts.on('-i', '--interactive', '[Optional] Interactive command line mode - for restoring dumps into databases') do
-  #   interactive = true
-  # end
+  opts.on("-p", "--playbook", String, "Path to the playbook") do |playbook|
+    @options[:playbook] = playbook
+  end
+
+  opts.on("-l", "--lang en|es", String, "Documentation language (default en)") do |lang|
+    @options[:lang] = lang
+  end
 
   opts.on('-h', '--help', 'Show this message') do
     puts opts
     exit
   end
-
-  # opts.separator "\nSetting can be verified by running following commands:"
 end
 
 begin
@@ -27,6 +34,8 @@ rescue OptionParser::ParseError => e
   exit
 end
 
+abort(option_parser.help) if @options[:playbook].nil?
+
 # Run generator
-AnsibleDocGenerator::DocGenerator.new(ARGV[0], ARGV[1]).call
+AnsibleDocGenerator::DocGenerator.new(@options[:playbook], @options[:lang]).call
 
