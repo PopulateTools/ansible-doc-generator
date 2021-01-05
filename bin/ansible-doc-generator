@@ -4,20 +4,19 @@
 require 'optparse'
 require_relative '../lib/ansible_doc_generator'
 
-@options = {
-  lang: 'en',
-  playbook: nil
+options = {
+  lang: 'en'
 }
 
 option_parser = OptionParser.new do |opts|
   opts.banner = 'Usage: ansible-doc-generator [options]'
 
-  opts.on("-p", "--playbook", String, "Path to the playbook") do |playbook|
-    @options[:playbook] = playbook
+  opts.on("-p playbook_path", "--playbook=playbook_path", String, "Path to the playbook") do |playbook|
+    options[:playbook] = playbook
   end
 
-  opts.on("-l", "--lang en|es", String, "Documentation language (default en)") do |lang|
-    @options[:lang] = lang
+  opts.on("-l es|en", "--lang=es|en", String, "Documentation language (default en)") do |lang|
+    options[:lang] = lang
   end
 
   opts.on('-h', '--help', 'Show this message') do
@@ -34,8 +33,8 @@ rescue OptionParser::ParseError => e
   exit
 end
 
-abort(option_parser.help) if @options[:playbook].nil?
+abort(option_parser.help) if options[:playbook].nil?
 
 # Run generator
-AnsibleDocGenerator::DocGenerator.new(@options[:playbook], @options[:lang]).call
+AnsibleDocGenerator::DocGenerator.new(options[:playbook], options[:lang]).call
 
