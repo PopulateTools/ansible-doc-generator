@@ -130,7 +130,7 @@ module AnsibleDocGenerator
         return nil unless line
 
         no_keyword_line = line.gsub(/@#{keyword}_#{lang}|@#{keyword}/, '')
-        if keyword == "input"
+        if %w(input output).include?(keyword)
           no_keyword_line
         else
           no_keyword_line.strip
