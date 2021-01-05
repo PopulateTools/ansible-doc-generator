@@ -48,7 +48,9 @@
 # @title_en Activate rbenv
 # @comment_es Añadir una entrada en #{lineinfile>destfile} para activar rbenv
 # @comment_en Add a line in #{lineinfile>destfile} to activate rbenv
-# @input #{lineinfile>line}
+# @input
+# # /etc/bashrc
+# #{lineinfile>line}
 - name: Activate rbenv in users
   become: yes
   lineinfile:
