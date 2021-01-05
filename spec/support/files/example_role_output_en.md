@@ -29,6 +29,7 @@ git clone https://github.com/rbenv/rbenv-vars.git /usr/lib/rbenv/plugins/rbenv-v
 Add a line in /etc/bashrc to activate rbenv
 
 ```
+# /etc/bashrc
 eval "$(rbenv init -)"
 ```
 

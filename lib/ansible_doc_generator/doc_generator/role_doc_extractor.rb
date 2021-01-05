@@ -41,7 +41,7 @@ module AnsibleDocGenerator
           if line.start_with?('#') && META_KEYWORDS.any?{|keyword| line.start_with?("# @#{keyword}") }
             parsed_content['meta'] << line.gsub('# ', '').strip
           elsif line.start_with?('#')
-            current_comments << line.gsub('# ', '')
+            current_comments << line.gsub(/\A#\s{1}/, '')
           elsif line.start_with?('- name:')
             task_name = line.gsub('- name:','').strip
             parsed_content[task_name] = current_comments
@@ -65,7 +65,7 @@ module AnsibleDocGenerator
           title = extract_from(:title, lines)
 
           output = extract_multiline_from(:output, lines, separator: "\n")
-          input = extract_multiline_from(:input, lines, separator: "")
+          input = extract_multiline_from(:input, lines, separator: "\n")
           comments = extract_multiline_from(:comment, lines)
 
           md_output << generate_md_with(task_name, title: title, comments: comments, output: output, input: input)
@@ -95,23 +95,25 @@ module AnsibleDocGenerator
       def extract_multiline_from keyword, lines, separator: ' '
         collection = []     # collection of @keyword with maybe several lines
         current_item = []   # current @keyword that will change through the loop
+        current_keyword = nil
 
         lines.each do |line|
           # It's the beginning of a comment
           if selectable_line?(keyword, line)
+            current_keyword = keyword
             # we save the previous comment before parsing the new one
             if current_item.any?
               collection << join_elements(current_item, separator)
               current_item = []
             end
-            current_item << clean_line(keyword, line)
-            # If it's another keyword but not relevant, we store current comment. But we keep the loop in case there are others
+            current_item << clean_line(current_keyword, line)
+          # If it's another keyword but not relevant, we store current comment. But we keep the loop in case there are others
           elsif line.start_with?("@") && !selectable_line?(keyword, line) && current_item.any?
             collection << join_elements(current_item, separator)
             current_item = []
-            # It's the second/third... line of a comment
+          # It's the second/third... line of a comment
           elsif current_item.any? && !line.start_with?('@')
-            current_item << line
+            current_item << clean_line(current_keyword, line)
           end
         end
 
@@ -128,7 +130,7 @@ module AnsibleDocGenerator
         return nil unless line
 
         no_keyword_line = line.gsub(/@#{keyword}_#{lang}|@#{keyword}/, '')
-        if keyword == "input"
+        if %w(input output).include?(keyword)
           no_keyword_line
         else
           no_keyword_line.strip
