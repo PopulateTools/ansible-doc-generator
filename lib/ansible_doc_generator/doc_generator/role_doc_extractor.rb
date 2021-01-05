@@ -41,7 +41,7 @@ module AnsibleDocGenerator
           if line.start_with?('#') && META_KEYWORDS.any?{|keyword| line.start_with?("# @#{keyword}") }
             parsed_content['meta'] << line.gsub('# ', '').strip
           elsif line.start_with?('#')
-            current_comments << line.gsub('# ', '')
+            current_comments << line.gsub(/\A#\s{1}/, '')
           elsif line.start_with?('- name:')
             task_name = line.gsub('- name:','').strip
             parsed_content[task_name] = current_comments
