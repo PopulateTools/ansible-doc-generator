@@ -1,4 +1,5 @@
 require_relative "playbook_helpers"
+require_relative "doc_generator/playbook_introduction_extractor"
 require_relative "doc_generator/role_doc_extractor"
 
 module AnsibleDocGenerator
@@ -15,11 +16,16 @@ module AnsibleDocGenerator
     end
 
     def call
+      parse_introduction
       parse_roles
       write_readme
     end
 
     private
+
+    def parse_introduction
+      md_output << PlaybookIntroductionExtractor.new(playbook_path, lang).call
+    end
 
     def parse_roles
       paths.each do |path|
