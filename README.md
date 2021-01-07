@@ -12,10 +12,7 @@ These are the types of comments accepted:
 - `@input` defines the command or action executed by the task. Produces a block of code. This comment is also multiline
 - `@output` defines the result of the execution. Produces a block of code
 
-Comments allow variable interpolation with the syntax `#{var}`. If the variable is defined in a
-sub-level it can be reached using the `>` operator, i.e. `#{apt>pkg}`
-
-Here's an example of role that uses most of the comments and variable interpolation:
+Here's an example of role that uses most of the comments and variable interpolation (see [explanation below](#variable-interpolation)):
 
 ```yaml
 ---
@@ -68,11 +65,49 @@ Here's an example of role that uses most of the comments and variable interpolat
 # @comment_en This role installs Ruby using Rbenv
 ```
 
-When calling the generation, you'll need to add a second parameter with the locale you want to
-generate:
+To get the Spanish documentation you should run:
 
 ```
-$ ansible-doc-generator ~/ansible/playbooks/ruby.yml es # to generate Spanish documentation
+$ ansible-doc-generator -p ~/ansible/playbooks/ruby.yml -l es
+```
+
+### Variable interpolation
+
+Comments allow variable interpolation with the syntax `#{var}`. If the variable is defined in a sub-level it can be reached using the `>` operator, i.e. `#{apt>pkg}`.
+
+Example: 
+
+```yaml 
+# @title #{name}
+# @input apt install -y #{apt>pkg | join: ' '}
+- name: Install Postgres
+  apt:
+    pkg: ['postgresql-12', 'postgresql-server-dev-12', 'postgresql-contrib-12']
+    state: present
+    update_cache: yes
+```
+
+Inline syntax is also supported:
+
+```yaml 
+# @input systemctl start #{service>name}
+- name: Enable and start monit
+  become: true
+  service: name=monit enabled=yes state=started
+```
+
+### File interpolation
+
+You can print the output of a file located within `files` or `template` of the same role with the syntax `f{filename.txt}`.
+
+For instance, given the following task inside the role `nginx/tasks/main.yml`, it will look for the file in `nginx/files/nginx.monit` and `nginx/templates/nginx.monit` and put its content.
+
+```yaml
+# @input f{nginx.monit}
+- name: Copy the nginx monit service files
+  copy:
+    src: nginx.monit
+    dest: /etc/monit.d/nginx.monit
 ```
 
 ## Installation
@@ -80,6 +115,15 @@ $ ansible-doc-generator ~/ansible/playbooks/ruby.yml es # to generate Spanish do
 ```
 $ gem install ansible-doc-generator
 ```
+
+## Usage
+
+```bash
+$ ansible-doc-generator -p ~/ansible/playbooks/ruby.yml -l es
+```
+
+- `-p` (mandatory) with the path of the ansible playbook.
+- `-l` (optional) with the language you want to generate the guide with. Default is `en`.
 
 ## TODO
 
