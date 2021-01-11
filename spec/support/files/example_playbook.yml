@@ -1,0 +1,8 @@
+---
+# @title Installation guide for Decidim environment
+# @comment We'll detail how to install the environment and the Decidim app
+# in a Redhat server from the scratch.
+# @comment First thing you need to install is Python and Ansible.
+- hosts: all
+  roles:
+    - { role: 'handlers' }

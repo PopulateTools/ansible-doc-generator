@@ -2,7 +2,7 @@
 
 CLI for documenting Ansible roles into Markdown files.
 
-Documentation is generated from _magic_ comments declared in the tasks file of a role, where everycomment should be put before the declaration of the task.
+Documentation is generated from _magic_ comments declared in the tasks file of a role, where every comment should be put before the declaration of the task.
 
 These are the types of comments accepted:
 
@@ -52,6 +52,20 @@ Here's an example of role that uses most of the comments and variable interpolat
     state: present
 ```
 
+You can also add `@title` and `@comment` keywords in the playbook file itself and they will appear in the beginning of the generated documentation as an introduction:
+
+```yaml
+---
+# @title Installation guide for the app environment
+# @comment We'll detail how to install the environment and the app
+# in a server from the scratch.
+# @comment First thing you need to install is Python and Ansible.
+- hosts: all
+  roles:
+    - { role: 'handlers' }
+    ...
+```
+
 ## Other features
 
 ### Localization
@@ -75,9 +89,9 @@ $ ansible-doc-generator -p ~/ansible/playbooks/ruby.yml -l es
 
 Comments allow variable interpolation with the syntax `#{var}`. If the variable is defined in a sub-level it can be reached using the `>` operator, i.e. `#{apt>pkg}`.
 
-Example: 
+Example:
 
-```yaml 
+```yaml
 # @title #{name}
 # @input apt install -y #{apt>pkg | join: ' '}
 - name: Install Postgres
@@ -89,7 +103,7 @@ Example:
 
 Inline syntax is also supported:
 
-```yaml 
+```yaml
 # @input systemctl start #{service>name}
 - name: Enable and start monit
   become: true
