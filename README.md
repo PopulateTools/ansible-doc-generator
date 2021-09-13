@@ -127,7 +127,7 @@ For instance, given the following task inside the role `nginx/tasks/main.yml`, i
 ## Installation
 
 ```
-$ gem install ansible-doc-generator
+$ gem install ansible_doc_generator
 ```
 
 ## Usage
