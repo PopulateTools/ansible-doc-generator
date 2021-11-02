@@ -10,7 +10,7 @@ module AnsibleDocGenerator
     end
 
     def paths
-      @paths ||= roles.map{|role| role['role'] }
+      @paths ||= roles.map{|role| role['role'] }.reject(&:nil?)
     end
 
     def roles
